@@ -1,0 +1,16 @@
+material rviz/waypoint_line
+{
+    technique
+    {
+        pass
+        {
+            vertex_program_ref rviz/waypoint_line.vert
+            {
+            }
+            fragment_program_ref rviz/waypoint_line.frag
+            {
+                param_named_auto shading custom 1
+            }
+        }
+    }
+}

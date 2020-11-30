@@ -1,0 +1,29 @@
+vertex_program rviz/waypoint_line.vert glsl
+{
+    source waypoint_line.vert
+    default_params
+    {
+        param_named_auto worldviewproj_matrixa worldviewproj_matrix
+	param_named_auto inverse_worldview_matrixa inverse_worldview_matrix
+	param_named_auto camera_position camera_position
+	param_named_auto time_0_1 time_0_1 1
+    }
+}
+
+geometry_program rviz/waypoint_line.geom glsl
+{
+    source waypoint_line.geom
+    input_operation_type points
+    output_operation_type triangle_strip
+    max_output_vertices 4
+    default_params
+    {
+        param_named_auto worldviewproj_matrix worldviewproj_matrix
+        param_named_auto inverse_worldview_matrix inverse_worldview_matrix
+    }
+}
+
+fragment_program rviz/waypoint_line.frag glsl
+{
+  source waypoint_line.frag
+}

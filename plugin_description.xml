@@ -1,0 +1,9 @@
+<library path="lib/librviz_multi_waypoint_plugin">
+  <class name="rviz_multi_waypoint_plugin/MultiWaypoint"
+         type="rviz_multi_waypoint_plugin::MultiWaypointTool"
+         base_class_type="rviz::Tool">
+    <description>
+      Tool for planting flags on the ground plane in rviz.
+    </description>
+  </class>
+</library>
