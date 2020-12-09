@@ -5,7 +5,7 @@
 ## First start with some standard catkin stuff.
 cmake_minimum_required(VERSION 3.0.2)
 project(rviz_multi_waypoint_plugin)
-find_package(catkin REQUIRED COMPONENTS rviz nav_msgs geometry_msgs)
+find_package(catkin REQUIRED COMPONENTS rviz nav_msgs geometry_msgs basestation_msgs)
 catkin_package()
 include_directories(${catkin_INCLUDE_DIRS})
 link_directories(${catkin_LIBRARY_DIRS})
