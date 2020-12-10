@@ -430,7 +430,7 @@ void MultiWaypointTool::publishWaypoints() {
 
     radio_msg.data += x_str + "," + y_str + "," + z_str;
     if (i != waypoints.size() - 1) {
-      radio_msg.data = radio_msg.data + ",";
+      radio_msg.data = radio_msg.data + ";";
     }
   }
   radio_pub.publish(radio_msg);
