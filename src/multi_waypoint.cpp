@@ -248,6 +248,23 @@ void MultiWaypointTool::onInitialize() {
   path_pub = nh.advertise<nav_msgs::Path>("waypoints", 1);
 
   radio_pub = nh.advertise<basestation_msgs::Radio>("/radio_command", 1);
+  ugv1_radio_pub =
+      nh.advertise<basestation_msgs::Radio>("/ugv1/radio_command", 1);
+  ugv2_radio_pub =
+      nh.advertise<basestation_msgs::Radio>("/ugv2/radio_command", 1);
+  ugv3_radio_pub =
+      nh.advertise<basestation_msgs::Radio>("/ugv3/radio_command", 1);
+  uav1_radio_pub =
+      nh.advertise<basestation_msgs::Radio>("/uav1/radio_command", 1);
+  uav2_radio_pub =
+      nh.advertise<basestation_msgs::Radio>("/uav2/radio_command", 1);
+  uav3_radio_pub =
+      nh.advertise<basestation_msgs::Radio>("/uav3/radio_command", 1);
+  uav4_radio_pub =
+      nh.advertise<basestation_msgs::Radio>("/uav4/radio_command", 1);
+
+  robot_select_sub = nh.subscribe(
+      "/robot_select", 10, &MultiWaypointTool::RobotSelectCallback, this);
 
   scene_node = scene_manager_->getRootSceneNode()->createChildSceneNode();
 
@@ -434,6 +451,43 @@ void MultiWaypointTool::publishWaypoints() {
     }
   }
   radio_pub.publish(radio_msg);
+
+  switch (current_robot_id) {
+  case 1: {
+    ugv1_radio_pub.publish(radio_msg);
+    break;
+  }
+  case 2: {
+    ugv2_radio_pub.publish(radio_msg);
+    break;
+  }
+  case 3: {
+    ugv3_radio_pub.publish(radio_msg);
+    break;
+  }
+  case 4: {
+    uav1_radio_pub.publish(radio_msg);
+    break;
+  }
+  case 5: {
+    uav2_radio_pub.publish(radio_msg);
+    break;
+  }
+  case 6: {
+    uav3_radio_pub.publish(radio_msg);
+    break;
+  }
+  case 7: {
+    uav4_radio_pub.publish(radio_msg);
+    break;
+  }
+  default: { ROS_ERROR("Not robot id specified"); }
+  }
+}
+
+void MultiWaypointTool::RobotSelectCallback(
+    const std_msgs::Int32::ConstPtr &robot_select) {
+  current_robot_id = robot_select->data;
 }
 
 void MultiWaypointTool::clearWaypoints() {

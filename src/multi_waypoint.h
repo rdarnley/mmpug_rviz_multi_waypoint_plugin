@@ -10,6 +10,7 @@
 #include <rviz/ogre_helpers/movable_text.h>
 #include <rviz/ogre_helpers/shape.h>
 #include <rviz/tool.h>
+#include <std_msgs/Int32.h>
 
 #include "basestation_msgs/Radio.h"
 
@@ -117,10 +118,21 @@ private:
   bool space_pressed;
   Grid *grid;
   bool grid_enabled;
+  int current_robot_id;
 
   ros::Publisher path_pub;
   ros::Publisher radio_pub;
+  ros::Publisher ugv1_radio_pub;
+  ros::Publisher ugv2_radio_pub;
+  ros::Publisher ugv3_radio_pub;
+  ros::Publisher uav1_radio_pub;
+  ros::Publisher uav2_radio_pub;
+  ros::Publisher uav3_radio_pub;
+  ros::Publisher uav4_radio_pub;
 
+  ros::Subscriber robot_select_sub;
+
+  void RobotSelectCallback(const std_msgs::Int32::ConstPtr &robot_select);
   void deleteActive();
   void publishWaypoints();
   void clearWaypoints();
