@@ -3,6 +3,7 @@
 
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <nav_msgs/Odometry.h>
 #include <nav_msgs/Path.h>
 #include <ros/ros.h>
 #include <rviz/ogre_helpers/arrow.h>
@@ -11,6 +12,7 @@
 #include <rviz/ogre_helpers/shape.h>
 #include <rviz/tool.h>
 #include <std_msgs/Int32.h>
+#include <tf/transform_broadcaster.h>
 
 #include "basestation_msgs/Radio.h"
 
@@ -131,8 +133,32 @@ private:
   ros::Publisher uav4_radio_pub;
 
   ros::Subscriber robot_select_sub;
+  ros::Subscriber ugv1_transform_sub;
+  ros::Subscriber ugv2_transform_sub;
+  ros::Subscriber ugv3_transform_sub;
+  ros::Subscriber uav1_transform_sub;
+  ros::Subscriber uav2_transform_sub;
+  ros::Subscriber uav3_transform_sub;
+  ros::Subscriber uav4_transform_sub;
+
+  tf::Transform ugv1_transform;
+  tf::Transform ugv2_transform;
+  tf::Transform ugv3_transform;
+  tf::Transform uav1_transform;
+  tf::Transform uav2_transform;
+  tf::Transform uav3_transform;
+  tf::Transform uav4_transform;
 
   void RobotSelectCallback(const std_msgs::Int32::ConstPtr &robot_select);
+  void UGV1TransformCallback(const nav_msgs::OdometryPtr &msg);
+  void UGV2TransformCallback(const nav_msgs::OdometryPtr &msg);
+  void UGV3TransformCallback(const nav_msgs::OdometryPtr &msg);
+  void UAV1TransformCallback(const nav_msgs::OdometryPtr &msg);
+  void UAV2TransformCallback(const nav_msgs::OdometryPtr &msg);
+  void UAV3TransformCallback(const nav_msgs::OdometryPtr &msg);
+  void UAV4TransformCallback(const nav_msgs::OdometryPtr &msg);
+
+  void InitializeTransform(tf::Transform &transform);
   void deleteActive();
   void publishWaypoints();
   void clearWaypoints();
