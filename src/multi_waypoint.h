@@ -127,36 +127,52 @@ private:
   ros::Publisher ugv1_radio_pub;
   ros::Publisher ugv2_radio_pub;
   ros::Publisher ugv3_radio_pub;
+  ros::Publisher sp1_radio_pub;
+  ros::Publisher sp2_radio_pub;
   ros::Publisher uav1_radio_pub;
   ros::Publisher uav2_radio_pub;
   ros::Publisher uav3_radio_pub;
   ros::Publisher uav4_radio_pub;
+  ros::Publisher canary1_radio_pub;
+  ros::Publisher canary2_radio_pub;
 
   ros::Subscriber robot_select_sub;
   ros::Subscriber ugv1_transform_sub;
   ros::Subscriber ugv2_transform_sub;
   ros::Subscriber ugv3_transform_sub;
+  ros::Subscriber sp1_transform_sub;
+  ros::Subscriber sp2_transform_sub;
   ros::Subscriber uav1_transform_sub;
   ros::Subscriber uav2_transform_sub;
   ros::Subscriber uav3_transform_sub;
   ros::Subscriber uav4_transform_sub;
+  ros::Subscriber canary1_transform_sub;
+  ros::Subscriber canary2_transform_sub;
 
   tf::Transform ugv1_transform;
   tf::Transform ugv2_transform;
   tf::Transform ugv3_transform;
+  tf::Transform sp1_transform;
+  tf::Transform sp2_transform;
   tf::Transform uav1_transform;
   tf::Transform uav2_transform;
   tf::Transform uav3_transform;
   tf::Transform uav4_transform;
+  tf::Transform canary1_transform;
+  tf::Transform canary2_transform;
 
   void RobotSelectCallback(const std_msgs::Int32::ConstPtr &robot_select);
   void UGV1TransformCallback(const nav_msgs::OdometryPtr &msg);
   void UGV2TransformCallback(const nav_msgs::OdometryPtr &msg);
   void UGV3TransformCallback(const nav_msgs::OdometryPtr &msg);
+  void SP1TransformCallback(const nav_msgs::OdometryPtr &msg);
+  void SP2TransformCallback(const nav_msgs::OdometryPtr &msg);
   void UAV1TransformCallback(const nav_msgs::OdometryPtr &msg);
   void UAV2TransformCallback(const nav_msgs::OdometryPtr &msg);
   void UAV3TransformCallback(const nav_msgs::OdometryPtr &msg);
   void UAV4TransformCallback(const nav_msgs::OdometryPtr &msg);
+  void CANARY1TransformCallback(const nav_msgs::OdometryPtr &msg);
+  void CANARY2TransformCallback(const nav_msgs::OdometryPtr &msg);
 
   void InitializeTransform(tf::Transform &transform);
   void deleteActive();

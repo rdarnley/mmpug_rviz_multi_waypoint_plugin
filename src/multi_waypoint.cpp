@@ -254,6 +254,10 @@ void MultiWaypointTool::onInitialize() {
       nh.advertise<basestation_msgs::Radio>("/ugv2/radio_command", 1);
   ugv3_radio_pub =
       nh.advertise<basestation_msgs::Radio>("/ugv3/radio_command", 1);
+  sp1_radio_pub =
+      nh.advertise<basestation_msgs::Radio>("/sp1/radio_command", 1);
+  sp2_radio_pub =
+      nh.advertise<basestation_msgs::Radio>("/sp2/radio_command", 1);
   uav1_radio_pub =
       nh.advertise<basestation_msgs::Radio>("/uav1/radio_command", 1);
   uav2_radio_pub =
@@ -262,6 +266,10 @@ void MultiWaypointTool::onInitialize() {
       nh.advertise<basestation_msgs::Radio>("/uav3/radio_command", 1);
   uav4_radio_pub =
       nh.advertise<basestation_msgs::Radio>("/uav4/radio_command", 1);
+  canary1_radio_pub =
+      nh.advertise<basestation_msgs::Radio>("/canary1/radio_command", 1);
+  canary2_radio_pub =
+      nh.advertise<basestation_msgs::Radio>("/canary2/radio_command", 1);
 
   robot_select_sub = nh.subscribe(
       "/robot_select", 10, &MultiWaypointTool::RobotSelectCallback, this);
@@ -275,6 +283,12 @@ void MultiWaypointTool::onInitialize() {
   ugv3_transform_sub =
       nh.subscribe("/ugv3/transform_to_darpa_world", 1,
                    &MultiWaypointTool::UGV3TransformCallback, this);
+  sp1_transform_sub =
+      nh.subscribe("/sp1/transform_to_darpa_world", 1,
+                   &MultiWaypointTool::SP1TransformCallback, this);
+  sp2_transform_sub =
+      nh.subscribe("/sp2/transform_to_darpa_world", 1,
+                   &MultiWaypointTool::SP2TransformCallback, this);
   uav1_transform_sub =
       nh.subscribe("/uav1/transform_to_darpa_world", 1,
                    &MultiWaypointTool::UAV1TransformCallback, this);
@@ -287,6 +301,12 @@ void MultiWaypointTool::onInitialize() {
   uav4_transform_sub =
       nh.subscribe("/uav4/transform_to_darpa_world", 1,
                    &MultiWaypointTool::UAV4TransformCallback, this);
+  canary1_transform_sub =
+      nh.subscribe("/canary1/transform_to_darpa_world", 1,
+                   &MultiWaypointTool::CANARY1TransformCallback, this);
+  canary2_transform_sub =
+      nh.subscribe("/canary2/transform_to_darpa_world", 1,
+                   &MultiWaypointTool::CANARY2TransformCallback, this);
 
   scene_node = scene_manager_->getRootSceneNode()->createChildSceneNode();
 
@@ -295,10 +315,14 @@ void MultiWaypointTool::onInitialize() {
   InitializeTransform(ugv1_transform);
   InitializeTransform(ugv2_transform);
   InitializeTransform(ugv3_transform);
+  InitializeTransform(sp1_transform);
+  InitializeTransform(sp2_transform);
   InitializeTransform(uav1_transform);
   InitializeTransform(uav2_transform);
   InitializeTransform(uav3_transform);
   InitializeTransform(uav4_transform);
+  InitializeTransform(canary1_transform);
+  InitializeTransform(canary2_transform);
 }
 
 void MultiWaypointTool::InitializeTransform(tf::Transform &transform) {
@@ -661,6 +685,102 @@ void MultiWaypointTool::publishWaypoints() {
     uav4_radio_pub.publish(robot_radio_msg);
     break;
   }
+  case 8: {
+    for (int i = 0; i < waypoints.size(); i++) {
+
+      vec.setX(waypoints[i]->getPosition().x);
+      vec.setY(waypoints[i]->getPosition().y);
+      vec.setZ(waypoints[i]->getPosition().z);
+      vec = sp1_transform.inverse() * vec;
+      std::stringstream x_stream, y_stream, z_stream;
+      x_stream << std::fixed << std::setprecision(2) << vec.x();
+      y_stream << std::fixed << std::setprecision(2) << vec.y();
+      z_stream << std::fixed << std::setprecision(2) << vec.z();
+
+      std::string x_str = x_stream.str();
+      std::string y_str = y_stream.str();
+      std::string z_str = z_stream.str();
+
+      robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
+      if (i != waypoints.size() - 1) {
+        robot_radio_msg.data = robot_radio_msg.data + ";";
+      }
+    }
+    sp1_radio_pub.publish(robot_radio_msg);
+    break;
+  }
+  case 9: {
+    for (int i = 0; i < waypoints.size(); i++) {
+
+      vec.setX(waypoints[i]->getPosition().x);
+      vec.setY(waypoints[i]->getPosition().y);
+      vec.setZ(waypoints[i]->getPosition().z);
+      vec = sp2_transform.inverse() * vec;
+      std::stringstream x_stream, y_stream, z_stream;
+      x_stream << std::fixed << std::setprecision(2) << vec.x();
+      y_stream << std::fixed << std::setprecision(2) << vec.y();
+      z_stream << std::fixed << std::setprecision(2) << vec.z();
+
+      std::string x_str = x_stream.str();
+      std::string y_str = y_stream.str();
+      std::string z_str = z_stream.str();
+
+      robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
+      if (i != waypoints.size() - 1) {
+        robot_radio_msg.data = robot_radio_msg.data + ";";
+      }
+    }
+    sp2_radio_pub.publish(robot_radio_msg);
+    break;
+  }
+  case 10: {
+    for (int i = 0; i < waypoints.size(); i++) {
+
+      vec.setX(waypoints[i]->getPosition().x);
+      vec.setY(waypoints[i]->getPosition().y);
+      vec.setZ(waypoints[i]->getPosition().z);
+      vec = canary1_transform.inverse() * vec;
+      std::stringstream x_stream, y_stream, z_stream;
+      x_stream << std::fixed << std::setprecision(2) << vec.x();
+      y_stream << std::fixed << std::setprecision(2) << vec.y();
+      z_stream << std::fixed << std::setprecision(2) << vec.z();
+
+      std::string x_str = x_stream.str();
+      std::string y_str = y_stream.str();
+      std::string z_str = z_stream.str();
+
+      robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
+      if (i != waypoints.size() - 1) {
+        robot_radio_msg.data = robot_radio_msg.data + ";";
+      }
+    }
+    canary1_radio_pub.publish(robot_radio_msg);
+    break;
+  }
+  case 11: {
+    for (int i = 0; i < waypoints.size(); i++) {
+
+      vec.setX(waypoints[i]->getPosition().x);
+      vec.setY(waypoints[i]->getPosition().y);
+      vec.setZ(waypoints[i]->getPosition().z);
+      vec = canary2_transform.inverse() * vec;
+      std::stringstream x_stream, y_stream, z_stream;
+      x_stream << std::fixed << std::setprecision(2) << vec.x();
+      y_stream << std::fixed << std::setprecision(2) << vec.y();
+      z_stream << std::fixed << std::setprecision(2) << vec.z();
+
+      std::string x_str = x_stream.str();
+      std::string y_str = y_stream.str();
+      std::string z_str = z_stream.str();
+
+      robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
+      if (i != waypoints.size() - 1) {
+        robot_radio_msg.data = robot_radio_msg.data + ";";
+      }
+    }
+    canary2_radio_pub.publish(robot_radio_msg);
+    break;
+  }
   default: { ROS_ERROR("Not robot id specified"); }
   }
 }
@@ -696,6 +816,24 @@ void MultiWaypointTool::UGV3TransformCallback(
                                        msg->pose.pose.position.y,
                                        msg->pose.pose.position.z));
   ugv3_transform.setRotation(tf::Quaternion(
+      msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
+      msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
+}
+
+void MultiWaypointTool::SP1TransformCallback(const nav_msgs::OdometryPtr &msg) {
+  sp1_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x,
+                                      msg->pose.pose.position.y,
+                                      msg->pose.pose.position.z));
+  sp1_transform.setRotation(tf::Quaternion(
+      msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
+      msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
+}
+
+void MultiWaypointTool::SP2TransformCallback(const nav_msgs::OdometryPtr &msg) {
+  sp2_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x,
+                                      msg->pose.pose.position.y,
+                                      msg->pose.pose.position.z));
+  sp2_transform.setRotation(tf::Quaternion(
       msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
       msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
 }
@@ -736,6 +874,26 @@ void MultiWaypointTool::UAV4TransformCallback(
                                        msg->pose.pose.position.y,
                                        msg->pose.pose.position.z));
   uav4_transform.setRotation(tf::Quaternion(
+      msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
+      msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
+}
+
+void MultiWaypointTool::CANARY1TransformCallback(
+    const nav_msgs::OdometryPtr &msg) {
+  canary1_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x,
+                                          msg->pose.pose.position.y,
+                                          msg->pose.pose.position.z));
+  canary1_transform.setRotation(tf::Quaternion(
+      msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
+      msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
+}
+
+void MultiWaypointTool::CANARY2TransformCallback(
+    const nav_msgs::OdometryPtr &msg) {
+  canary2_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x,
+                                          msg->pose.pose.position.y,
+                                          msg->pose.pose.position.z));
+  canary2_transform.setRotation(tf::Quaternion(
       msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
       msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
 }
