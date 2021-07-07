@@ -312,6 +312,8 @@ void MultiWaypointTool::onInitialize() {
 
   grid = new Grid(scene_manager_, scene_node);
 
+  current_robot_id = 1;
+
   InitializeTransform(ugv1_transform);
   InitializeTransform(ugv2_transform);
   InitializeTransform(ugv3_transform);
