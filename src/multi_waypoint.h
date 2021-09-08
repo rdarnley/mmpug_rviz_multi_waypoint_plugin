@@ -16,38 +16,41 @@
 
 #include "basestation_msgs/Radio.h"
 
-namespace Ogre {
+namespace Ogre
+{
 class SceneNode;
 class Vector3;
 }
 
-namespace rviz {
+namespace rviz
+{
 class VectorProperty;
 class VisualizationManager;
 class ViewportMouseEvent;
 }
 
-namespace rviz_multi_waypoint_plugin {
-
+namespace rviz_multi_waypoint_plugin
+{
 // BEGIN_TUTORIAL
 // Here we declare our new subclass of rviz::Tool.  Every tool
 // which can be added to the tool bar is a subclass of
 // rviz::Tool.
 
-class Waypoint {
+class Waypoint
+{
 private:
   float radius;
   bool use_orientation;
 
-  Ogre::SceneManager *scene_manager;
-  Ogre::SceneNode *scene_node;
+  Ogre::SceneManager* scene_manager;
+  Ogre::SceneNode* scene_node;
 
-  rviz::Shape *sphere;
-  rviz::Arrow *arrow;
-  rviz::MovableText *text;
+  rviz::Shape* sphere;
+  rviz::Arrow* arrow;
+  rviz::MovableText* text;
 
 public:
-  Waypoint(Ogre::SceneManager *scene_manager, Ogre::SceneNode *scene_node);
+  Waypoint(Ogre::SceneManager* scene_manager, Ogre::SceneNode* scene_node);
   ~Waypoint();
 
   void setPosition(Ogre::Vector3 p);
@@ -62,36 +65,39 @@ public:
   geometry_msgs::Pose getPose();
 };
 
-class Line {
+class Line
+{
 private:
-  Ogre::SceneManager *scene_manager;
-  Ogre::SceneNode *scene_node;
+  Ogre::SceneManager* scene_manager;
+  Ogre::SceneNode* scene_node;
 
-  rviz::Line *line;
+  rviz::Line* line;
 
 public:
-  Line(Ogre::SceneManager *scene_manager, Ogre::SceneNode *scene_node);
+  Line(Ogre::SceneManager* scene_manager, Ogre::SceneNode* scene_node);
   ~Line();
-  void setPositions(Waypoint *start, Waypoint *end);
+  void setPositions(Waypoint* start, Waypoint* end);
   void setColor(float r, float g, float b, float a = 1.f);
 };
 
-class Grid {
+class Grid
+{
 private:
-  Ogre::SceneManager *scene_manager;
-  Ogre::SceneNode *scene_node;
+  Ogre::SceneManager* scene_manager;
+  Ogre::SceneNode* scene_node;
 
-  std::vector<rviz::Line *> lines;
+  std::vector<rviz::Line*> lines;
 
 public:
-  Grid(Ogre::SceneManager *scene_manager, Ogre::SceneNode *scene_node);
+  Grid(Ogre::SceneManager* scene_manager, Ogre::SceneNode* scene_node);
   ~Grid();
 
   void setPosition(Ogre::Vector3 position);
   void setVisible(bool visible);
 };
 
-class MultiWaypointTool : public rviz::Tool {
+class MultiWaypointTool : public rviz::Tool
+{
   Q_OBJECT
 public:
   MultiWaypointTool();
@@ -102,23 +108,23 @@ public:
   virtual void activate();
   virtual void deactivate();
 
-  virtual int processMouseEvent(rviz::ViewportMouseEvent &event);
-  virtual int processKeyEvent(QKeyEvent *event, rviz::RenderPanel *panel);
+  virtual int processMouseEvent(rviz::ViewportMouseEvent& event);
+  virtual int processKeyEvent(QKeyEvent* event, rviz::RenderPanel* panel);
 
-  virtual void load(const rviz::Config &config);
+  virtual void load(const rviz::Config& config);
   virtual void save(rviz::Config config) const;
 
 private:
-  Ogre::SceneNode *scene_node;
-  Waypoint *active_waypoint;
-  Line *active_line;
-  std::vector<Waypoint *> waypoints;
-  std::vector<Line *> lines;
+  Ogre::SceneNode* scene_node;
+  Waypoint* active_waypoint;
+  Line* active_line;
+  std::vector<Waypoint*> waypoints;
+  std::vector<Line*> lines;
   int active_waypoint_index;
   float z_height;
   bool set_orientation_mode;
   bool space_pressed;
-  Grid *grid;
+  Grid* grid;
   bool grid_enabled;
   int current_robot_id;
 
@@ -161,26 +167,26 @@ private:
   tf::Transform canary1_transform;
   tf::Transform canary2_transform;
 
-  void RobotSelectCallback(const std_msgs::Int32::ConstPtr &robot_select);
-  void UGV1TransformCallback(const nav_msgs::OdometryPtr &msg);
-  void UGV2TransformCallback(const nav_msgs::OdometryPtr &msg);
-  void UGV3TransformCallback(const nav_msgs::OdometryPtr &msg);
-  void SP1TransformCallback(const nav_msgs::OdometryPtr &msg);
-  void SP2TransformCallback(const nav_msgs::OdometryPtr &msg);
-  void UAV1TransformCallback(const nav_msgs::OdometryPtr &msg);
-  void UAV2TransformCallback(const nav_msgs::OdometryPtr &msg);
-  void UAV3TransformCallback(const nav_msgs::OdometryPtr &msg);
-  void UAV4TransformCallback(const nav_msgs::OdometryPtr &msg);
-  void CANARY1TransformCallback(const nav_msgs::OdometryPtr &msg);
-  void CANARY2TransformCallback(const nav_msgs::OdometryPtr &msg);
+  void RobotSelectCallback(const std_msgs::Int32::ConstPtr& robot_select);
+  void UGV1TransformCallback(const nav_msgs::OdometryPtr& msg);
+  void UGV2TransformCallback(const nav_msgs::OdometryPtr& msg);
+  void UGV3TransformCallback(const nav_msgs::OdometryPtr& msg);
+  void SP1TransformCallback(const nav_msgs::OdometryPtr& msg);
+  void SP2TransformCallback(const nav_msgs::OdometryPtr& msg);
+  void UAV1TransformCallback(const nav_msgs::OdometryPtr& msg);
+  void UAV2TransformCallback(const nav_msgs::OdometryPtr& msg);
+  void UAV3TransformCallback(const nav_msgs::OdometryPtr& msg);
+  void UAV4TransformCallback(const nav_msgs::OdometryPtr& msg);
+  void CANARY1TransformCallback(const nav_msgs::OdometryPtr& msg);
+  void CANARY2TransformCallback(const nav_msgs::OdometryPtr& msg);
 
-  void InitializeTransform(tf::Transform &transform);
+  void InitializeTransform(tf::Transform& transform);
   void deleteActive();
   void publishWaypoints();
   void clearWaypoints();
 };
 // END_TUTORIAL
 
-} // end namespace rviz_multi_waypoint_plugin
+}  // end namespace rviz_multi_waypoint_plugin
 
-#endif // PLANT_FLAG_TOOL_H
+#endif  // PLANT_FLAG_TOOL_H

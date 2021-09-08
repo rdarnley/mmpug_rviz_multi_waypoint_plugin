@@ -16,12 +16,16 @@
 #include "multi_waypoint.h"
 #include <GL/gl.h>
 
-namespace rviz_multi_waypoint_plugin {
-
-Waypoint::Waypoint(Ogre::SceneManager *scene_manager,
-                   Ogre::SceneNode *scene_node)
-    : radius(0.5f), scene_manager(scene_manager), scene_node(scene_node),
-      use_orientation(false), sphere(NULL), arrow(NULL) {
+namespace rviz_multi_waypoint_plugin
+{
+Waypoint::Waypoint(Ogre::SceneManager* scene_manager, Ogre::SceneNode* scene_node)
+  : radius(0.5f)
+  , scene_manager(scene_manager)
+  , scene_node(scene_node)
+  , use_orientation(false)
+  , sphere(NULL)
+  , arrow(NULL)
+{
   text = new rviz::MovableText("........");
   text->setVisible(false);
   scene_node->attachObject(text);
@@ -33,17 +37,20 @@ Waypoint::Waypoint(Ogre::SceneManager *scene_manager,
   arrow->getSceneNode()->setVisible(false);
 }
 
-Waypoint::~Waypoint() {
+Waypoint::~Waypoint()
+{
   delete sphere;
   delete arrow;
   scene_node->detachObject(text);
   delete text;
 }
 
-void Waypoint::setPosition(Ogre::Vector3 p) {
+void Waypoint::setPosition(Ogre::Vector3 p)
+{
   if (arrow != NULL)
     arrow->setPosition(p);
-  if (sphere != NULL) {
+  if (sphere != NULL)
+  {
     sphere->setPosition(p);
 
     std::ostringstream out;
@@ -57,19 +64,22 @@ void Waypoint::setPosition(Ogre::Vector3 p) {
   }
 }
 
-void Waypoint::setOrientation(Ogre::Quaternion q) {
+void Waypoint::setOrientation(Ogre::Quaternion q)
+{
   if (arrow != NULL)
     arrow->setOrientation(q);
 }
 
-void Waypoint::setColor(float r, float g, float b, float a) {
+void Waypoint::setColor(float r, float g, float b, float a)
+{
   if (sphere != NULL)
     sphere->setColor(r, g, b, a);
   if (arrow != NULL)
     arrow->setColor(r, g, b, a);
 }
 
-void Waypoint::useOrientation(bool value) {
+void Waypoint::useOrientation(bool value)
+{
   use_orientation = value;
 
   if (use_orientation)
@@ -77,9 +87,13 @@ void Waypoint::useOrientation(bool value) {
   else
     arrow->getSceneNode()->setVisible(false);
 }
-bool Waypoint::getUseOrientation() { return use_orientation; }
+bool Waypoint::getUseOrientation()
+{
+  return use_orientation;
+}
 
-Ogre::Vector3 Waypoint::getPosition() {
+Ogre::Vector3 Waypoint::getPosition()
+{
   if (sphere != NULL)
     return sphere->getPosition();
   if (arrow != NULL)
@@ -88,22 +102,29 @@ Ogre::Vector3 Waypoint::getPosition() {
   return Ogre::Vector3(0, 0, 0);
 }
 
-float Waypoint::getRadius() { return radius; }
+float Waypoint::getRadius()
+{
+  return radius;
+}
 
-geometry_msgs::Pose Waypoint::getPose() {
+geometry_msgs::Pose Waypoint::getPose()
+{
   geometry_msgs::Pose pose;
   Ogre::Vector3 position = getPosition();
   pose.position.x = position.x;
   pose.position.y = position.y;
   pose.position.z = position.z;
 
-  if (getUseOrientation()) {
+  if (getUseOrientation())
+  {
     Ogre::Quaternion orientation = arrow->getOrientation();
     pose.orientation.x = orientation.x;
     pose.orientation.y = orientation.y;
     pose.orientation.z = orientation.z;
     pose.orientation.w = orientation.w;
-  } else {
+  }
+  else
+  {
     pose.orientation.x = 0;
     pose.orientation.y = 0;
     pose.orientation.z = 0;
@@ -130,9 +151,9 @@ public:
 };
 */
 
-Line::Line(Ogre::SceneManager *scene_manager, Ogre::SceneNode *scene_node)
-    : scene_manager(scene_manager), scene_node(scene_node), line(NULL) {
-
+Line::Line(Ogre::SceneManager* scene_manager, Ogre::SceneNode* scene_node)
+  : scene_manager(scene_manager), scene_node(scene_node), line(NULL)
+{
   /*
   Ogre::MaterialPtr m =
   Ogre::MaterialManager::getSingleton().getByName("rviz/waypoint_line");
@@ -181,37 +202,46 @@ Line::Line(Ogre::SceneManager *scene_manager, Ogre::SceneNode *scene_node)
   */
 }
 
-Line::~Line() { delete line; }
+Line::~Line()
+{
+  delete line;
+}
 
-void Line::setPositions(Waypoint *start, Waypoint *end) {
-  if (line == NULL) {
+void Line::setPositions(Waypoint* start, Waypoint* end)
+{
+  if (line == NULL)
+  {
     line = new rviz::Line(scene_manager, scene_node);
     line->setColor(0.f, 0.f, 1.f, 1.f);
   }
   line->setPoints(start->getPosition(), end->getPosition());
 }
 
-void Line::setColor(float r, float g, float b, float a) {
+void Line::setColor(float r, float g, float b, float a)
+{
   line->setColor(r, g, b, a);
 }
 
-Grid::Grid(Ogre::SceneManager *scene_manager, Ogre::SceneNode *scene_node)
-    : scene_manager(scene_manager), scene_node(scene_node) {
+Grid::Grid(Ogre::SceneManager* scene_manager, Ogre::SceneNode* scene_node)
+  : scene_manager(scene_manager), scene_node(scene_node)
+{
   float radius = 5.f;
   float increment = 1.f;
 
-  for (float x = -radius; x <= radius; x += increment) {
+  for (float x = -radius; x <= radius; x += increment)
+  {
     Ogre::Vector3 start(x, sqrt(-(x * x) + radius * radius), 0.f);
     Ogre::Vector3 stop(x, -sqrt(-(x * x) + radius * radius), 0.f);
-    rviz::Line *line = new rviz::Line(scene_manager, scene_node);
+    rviz::Line* line = new rviz::Line(scene_manager, scene_node);
     line->setPoints(start, stop);
     line->setColor(1.f, 1.f, 1.f, 0.3f);
     lines.push_back(line);
   }
-  for (float x = -radius; x <= radius; x += increment) {
+  for (float x = -radius; x <= radius; x += increment)
+  {
     Ogre::Vector3 start(sqrt(-(x * x) + radius * radius), x, 0.f);
     Ogre::Vector3 stop(-sqrt(-(x * x) + radius * radius), x, 0.f);
-    rviz::Line *line = new rviz::Line(scene_manager, scene_node);
+    rviz::Line* line = new rviz::Line(scene_manager, scene_node);
     line->setPoints(start, stop);
     line->setColor(1.f, 1.f, 1.f, 1.0f);
     lines.push_back(line);
@@ -219,94 +249,81 @@ Grid::Grid(Ogre::SceneManager *scene_manager, Ogre::SceneNode *scene_node)
   setVisible(false);
 }
 
-Grid::~Grid() {
+Grid::~Grid()
+{
   for (int i = 0; i < lines.size(); i++)
     delete lines[i];
   lines.clear();
 }
 
-void Grid::setPosition(Ogre::Vector3 position) {
+void Grid::setPosition(Ogre::Vector3 position)
+{
   for (int i = 0; i < lines.size(); i++)
     lines[i]->setPosition(position);
 }
 
-void Grid::setVisible(bool visible) {
+void Grid::setVisible(bool visible)
+{
   for (int i = 0; i < lines.size(); i++)
     lines[i]->setVisible(visible);
 }
 
 MultiWaypointTool::MultiWaypointTool()
-    : z_height(0.f), set_orientation_mode(false), active_waypoint(NULL),
-      active_line(NULL), space_pressed(false), grid(NULL), grid_enabled(true) {
+  : z_height(0.f)
+  , set_orientation_mode(false)
+  , active_waypoint(NULL)
+  , active_line(NULL)
+  , space_pressed(false)
+  , grid(NULL)
+  , grid_enabled(true)
+{
   shortcut_key_ = 'w';
 }
 
-MultiWaypointTool::~MultiWaypointTool() {}
+MultiWaypointTool::~MultiWaypointTool()
+{
+}
 
-void MultiWaypointTool::onInitialize() {
+void MultiWaypointTool::onInitialize()
+{
   ros::NodeHandle nh;
   path_pub = nh.advertise<nav_msgs::Path>("waypoints", 1);
 
   radio_pub = nh.advertise<basestation_msgs::Radio>("/radio_command", 1);
-  ugv1_radio_pub =
-      nh.advertise<basestation_msgs::Radio>("/ugv1/radio_command", 1);
-  ugv2_radio_pub =
-      nh.advertise<basestation_msgs::Radio>("/ugv2/radio_command", 1);
-  ugv3_radio_pub =
-      nh.advertise<basestation_msgs::Radio>("/ugv3/radio_command", 1);
-  sp1_radio_pub =
-      nh.advertise<basestation_msgs::Radio>("/sp1/radio_command", 1);
-  sp2_radio_pub =
-      nh.advertise<basestation_msgs::Radio>("/sp2/radio_command", 1);
-  uav1_radio_pub =
-      nh.advertise<basestation_msgs::Radio>("/uav1/radio_command", 1);
-  uav2_radio_pub =
-      nh.advertise<basestation_msgs::Radio>("/uav2/radio_command", 1);
-  uav3_radio_pub =
-      nh.advertise<basestation_msgs::Radio>("/uav3/radio_command", 1);
-  uav4_radio_pub =
-      nh.advertise<basestation_msgs::Radio>("/uav4/radio_command", 1);
-  canary1_radio_pub =
-      nh.advertise<basestation_msgs::Radio>("/canary1/radio_command", 1);
-  canary2_radio_pub =
-      nh.advertise<basestation_msgs::Radio>("/canary2/radio_command", 1);
+  ugv1_radio_pub = nh.advertise<basestation_msgs::Radio>("/ugv1/radio_command", 1);
+  ugv2_radio_pub = nh.advertise<basestation_msgs::Radio>("/ugv2/radio_command", 1);
+  ugv3_radio_pub = nh.advertise<basestation_msgs::Radio>("/ugv3/radio_command", 1);
+  sp1_radio_pub = nh.advertise<basestation_msgs::Radio>("/sp1/radio_command", 1);
+  sp2_radio_pub = nh.advertise<basestation_msgs::Radio>("/sp2/radio_command", 1);
+  uav1_radio_pub = nh.advertise<basestation_msgs::Radio>("/uav1/radio_command", 1);
+  uav2_radio_pub = nh.advertise<basestation_msgs::Radio>("/uav2/radio_command", 1);
+  uav3_radio_pub = nh.advertise<basestation_msgs::Radio>("/uav3/radio_command", 1);
+  uav4_radio_pub = nh.advertise<basestation_msgs::Radio>("/uav4/radio_command", 1);
+  canary1_radio_pub = nh.advertise<basestation_msgs::Radio>("/canary1/radio_command", 1);
+  canary2_radio_pub = nh.advertise<basestation_msgs::Radio>("/canary2/radio_command", 1);
 
-  robot_select_sub = nh.subscribe(
-      "/robot_select", 10, &MultiWaypointTool::RobotSelectCallback, this);
+  robot_select_sub = nh.subscribe("/robot_select", 10, &MultiWaypointTool::RobotSelectCallback, this);
 
   ugv1_transform_sub =
-      nh.subscribe("/ugv1/transform_to_darpa_world", 1,
-                   &MultiWaypointTool::UGV1TransformCallback, this);
+      nh.subscribe("/ugv1/transform_to_darpa_world", 1, &MultiWaypointTool::UGV1TransformCallback, this);
   ugv2_transform_sub =
-      nh.subscribe("/ugv2/transform_to_darpa_world", 1,
-                   &MultiWaypointTool::UGV2TransformCallback, this);
+      nh.subscribe("/ugv2/transform_to_darpa_world", 1, &MultiWaypointTool::UGV2TransformCallback, this);
   ugv3_transform_sub =
-      nh.subscribe("/ugv3/transform_to_darpa_world", 1,
-                   &MultiWaypointTool::UGV3TransformCallback, this);
-  sp1_transform_sub =
-      nh.subscribe("/sp1/transform_to_darpa_world", 1,
-                   &MultiWaypointTool::SP1TransformCallback, this);
-  sp2_transform_sub =
-      nh.subscribe("/sp2/transform_to_darpa_world", 1,
-                   &MultiWaypointTool::SP2TransformCallback, this);
+      nh.subscribe("/ugv3/transform_to_darpa_world", 1, &MultiWaypointTool::UGV3TransformCallback, this);
+  sp1_transform_sub = nh.subscribe("/sp1/transform_to_darpa_world", 1, &MultiWaypointTool::SP1TransformCallback, this);
+  sp2_transform_sub = nh.subscribe("/sp2/transform_to_darpa_world", 1, &MultiWaypointTool::SP2TransformCallback, this);
   uav1_transform_sub =
-      nh.subscribe("/uav1/transform_to_darpa_world", 1,
-                   &MultiWaypointTool::UAV1TransformCallback, this);
+      nh.subscribe("/uav1/transform_to_darpa_world", 1, &MultiWaypointTool::UAV1TransformCallback, this);
   uav2_transform_sub =
-      nh.subscribe("/uav2/transform_to_darpa_world", 1,
-                   &MultiWaypointTool::UAV2TransformCallback, this);
+      nh.subscribe("/uav2/transform_to_darpa_world", 1, &MultiWaypointTool::UAV2TransformCallback, this);
   uav3_transform_sub =
-      nh.subscribe("/uav3/transform_to_darpa_world", 1,
-                   &MultiWaypointTool::UAV3TransformCallback, this);
+      nh.subscribe("/uav3/transform_to_darpa_world", 1, &MultiWaypointTool::UAV3TransformCallback, this);
   uav4_transform_sub =
-      nh.subscribe("/uav4/transform_to_darpa_world", 1,
-                   &MultiWaypointTool::UAV4TransformCallback, this);
+      nh.subscribe("/uav4/transform_to_darpa_world", 1, &MultiWaypointTool::UAV4TransformCallback, this);
   canary1_transform_sub =
-      nh.subscribe("/canary1/transform_to_darpa_world", 1,
-                   &MultiWaypointTool::CANARY1TransformCallback, this);
+      nh.subscribe("/canary1/transform_to_darpa_world", 1, &MultiWaypointTool::CANARY1TransformCallback, this);
   canary2_transform_sub =
-      nh.subscribe("/canary2/transform_to_darpa_world", 1,
-                   &MultiWaypointTool::CANARY2TransformCallback, this);
+      nh.subscribe("/canary2/transform_to_darpa_world", 1, &MultiWaypointTool::CANARY2TransformCallback, this);
 
   scene_node = scene_manager_->getRootSceneNode()->createChildSceneNode();
 
@@ -327,17 +344,25 @@ void MultiWaypointTool::onInitialize() {
   InitializeTransform(canary2_transform);
 }
 
-void MultiWaypointTool::InitializeTransform(tf::Transform &transform) {
+void MultiWaypointTool::InitializeTransform(tf::Transform& transform)
+{
   transform.setOrigin(tf::Vector3(0.0, 0.0, 0.0));
   transform.setRotation(tf::Quaternion(0.0, 0.0, 0.0, 1.0));
 }
 
-void MultiWaypointTool::activate() {}
+void MultiWaypointTool::activate()
+{
+}
 
-void MultiWaypointTool::deactivate() { deleteActive(); }
+void MultiWaypointTool::deactivate()
+{
+  deleteActive();
+}
 
-int MultiWaypointTool::processMouseEvent(rviz::ViewportMouseEvent &event) {
-  if (space_pressed) {
+int MultiWaypointTool::processMouseEvent(rviz::ViewportMouseEvent& event)
+{
+  if (space_pressed)
+  {
     space_pressed = false;
     publishWaypoints();
     clearWaypoints();
@@ -353,23 +378,27 @@ int MultiWaypointTool::processMouseEvent(rviz::ViewportMouseEvent &event) {
 
   Ogre::Vector3 intersection;
   Ogre::Plane ground_plane(Ogre::Vector3::UNIT_Z, z_height);
-  if (rviz::getPointOnPlaneFromWindowXY(event.viewport, ground_plane, event.x,
-                                        event.y, intersection)) {
+  if (rviz::getPointOnPlaneFromWindowXY(event.viewport, ground_plane, event.x, event.y, intersection))
+  {
     // check if the mouse is over a waypoint
-    for (int i = 0; i < waypoints.size(); i++) {
-      Waypoint *waypoint = waypoints[i];
+    for (int i = 0; i < waypoints.size(); i++)
+    {
+      Waypoint* waypoint = waypoints[i];
       Ogre::Vector3 wp_pos = waypoint->getPosition();
       Ogre::Vector3 point;
       Ogre::Plane plane(Ogre::Vector3::UNIT_Z, wp_pos.z);
-      if (rviz::getPointOnPlaneFromWindowXY(event.viewport, plane, event.x,
-                                            event.y, point)) {
+      if (rviz::getPointOnPlaneFromWindowXY(event.viewport, plane, event.x, event.y, point))
+      {
         // check if the mouse is over a waypoint
-        if (point.distance(wp_pos) < waypoint->getRadius()) {
+        if (point.distance(wp_pos) < waypoint->getRadius())
+        {
           waypoint->setColor(1.f, 1.f, 0.f);
 
-          if (active_waypoint == NULL) {
+          if (active_waypoint == NULL)
+          {
             // check if an existing waypoint should be moved
-            if (event.leftDown()) {
+            if (event.leftDown())
+            {
               active_waypoint = waypoint;
               grid->setVisible(grid_enabled);
               z_height = active_waypoint->getPosition().z;
@@ -377,13 +406,15 @@ int MultiWaypointTool::processMouseEvent(rviz::ViewportMouseEvent &event) {
               return Render;
             }
             // check if an existing waypoint should be deleted
-            else if (event.rightDown()) {
+            else if (event.rightDown())
+            {
               active_waypoint = waypoint;
               deleteActive();
               return Render;
             }
           }
-        } else
+        }
+        else
           waypoint->setColor(0.f, 0.f, 1.f);
 
         // color the active waypoint red
@@ -397,8 +428,10 @@ int MultiWaypointTool::processMouseEvent(rviz::ViewportMouseEvent &event) {
     }
 
     // move the active waypoint to the mouse
-    if (active_waypoint != NULL) {
-      if (set_orientation_mode) {
+    if (active_waypoint != NULL)
+    {
+      if (set_orientation_mode)
+      {
         Ogre::Vector3 direction = active_waypoint->getPosition() - intersection;
         direction.normalise();
         Ogre::Vector3 up(0, 0, 1);
@@ -406,61 +439,74 @@ int MultiWaypointTool::processMouseEvent(rviz::ViewportMouseEvent &event) {
         cross.normalise();
         Ogre::Quaternion q(direction, up, cross);
 
-        active_waypoint->setOrientation(
-            q * Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Y));
+        active_waypoint->setOrientation(q * Ogre::Quaternion(Ogre::Degree(90), Ogre::Vector3::UNIT_Y));
         active_waypoint->useOrientation(true);
-      } else {
+      }
+      else
+      {
         if (grid != NULL)
           grid->setPosition(intersection);
         active_waypoint->setPosition(intersection);
         if (active_line != NULL && !waypoints.empty())
-          active_line->setPositions(waypoints[waypoints.size() - 1],
-                                    active_waypoint);
+          active_line->setPositions(waypoints[waypoints.size() - 1], active_waypoint);
       }
     }
   }
 
-  if (event.leftDown()) {
+  if (event.leftDown())
+  {
     set_orientation_mode = false;
-    if (active_waypoint != NULL) {
+    if (active_waypoint != NULL)
+    {
       if (waypoints.empty() || (!waypoints.empty() && active_line != NULL))
         waypoints.push_back(active_waypoint);
       active_waypoint = NULL;
       grid->setVisible(false);
 
-      if (active_line != NULL) {
+      if (active_line != NULL)
+      {
         // active_line->setColor(0.f, 1.f, 0.f, 1.f);
         lines.push_back(active_line);
         active_line = NULL;
       }
-    } else {
+    }
+    else
+    {
       active_waypoint = new Waypoint(scene_manager_, scene_node);
       active_waypoint->setPosition(intersection);
       grid->setVisible(grid_enabled);
       grid->setPosition(intersection);
-      if (!waypoints.empty()) {
+      if (!waypoints.empty())
+      {
         active_line = new Line(scene_manager_, scene_node);
         z_height = waypoints.back()->getPosition().z;
-      } else
+      }
+      else
         z_height = 0.f;
     }
-  } else if (event.rightDown()) {
+  }
+  else if (event.rightDown())
+  {
     deleteActive();
   }
 
   return Render;
 }
 
-void MultiWaypointTool::deleteActive() {
+void MultiWaypointTool::deleteActive()
+{
   grid->setVisible(false);
-  for (int i = 0; i < waypoints.size(); i++) {
-    Waypoint *waypoint = waypoints[i];
-    if (active_waypoint == waypoint) {
+  for (int i = 0; i < waypoints.size(); i++)
+  {
+    Waypoint* waypoint = waypoints[i];
+    if (active_waypoint == waypoint)
+    {
       waypoints.erase(waypoints.begin() + i);
-      if (!lines.empty() && i <= lines.size()) {
+      if (!lines.empty() && i <= lines.size())
+      {
         if (i == lines.size())
           i--;
-        Line *line = lines[i];
+        Line* line = lines[i];
         lines.erase(lines.begin() + i);
         delete line;
         if (i - 1 >= 0 && i < waypoints.size())
@@ -475,12 +521,14 @@ void MultiWaypointTool::deleteActive() {
   active_line = NULL;
 }
 
-void MultiWaypointTool::publishWaypoints() {
+void MultiWaypointTool::publishWaypoints()
+{
   nav_msgs::Path path;
   path.header.stamp = ros::Time::now();
   path.header.frame_id = context_->getFixedFrame().toStdString();
 
-  for (int i = 0; i < waypoints.size(); i++) {
+  for (int i = 0; i < waypoints.size(); i++)
+  {
     geometry_msgs::PoseStamped pose;
     pose.header = path.header;
     pose.pose = waypoints[i]->getPose();
@@ -490,417 +538,417 @@ void MultiWaypointTool::publishWaypoints() {
   path_pub.publish(path);
 
   basestation_msgs::Radio radio_msg;
-  radio_msg.message_type =
-      basestation_msgs::Radio::MESSAGE_TYPE_DEFINE_WAYPOINT;
-  for (int i = 0; i < waypoints.size(); i++) {
-
+  radio_msg.message_type = basestation_msgs::Radio::MESSAGE_TYPE_DEFINE_WAYPOINT;
+  for (int i = 0; i < waypoints.size(); i++)
+  {
     std::stringstream x_stream, y_stream, z_stream;
-    x_stream << std::fixed << std::setprecision(2)
-             << waypoints[i]->getPosition().x;
-    y_stream << std::fixed << std::setprecision(2)
-             << waypoints[i]->getPosition().y;
-    z_stream << std::fixed << std::setprecision(2)
-             << waypoints[i]->getPosition().z;
+    x_stream << std::fixed << std::setprecision(2) << waypoints[i]->getPosition().x;
+    y_stream << std::fixed << std::setprecision(2) << waypoints[i]->getPosition().y;
+    z_stream << std::fixed << std::setprecision(2) << waypoints[i]->getPosition().z;
 
     std::string x_str = x_stream.str();
     std::string y_str = y_stream.str();
     std::string z_str = z_stream.str();
 
     radio_msg.data += x_str + "," + y_str + "," + z_str;
-    if (i != waypoints.size() - 1) {
+    if (i != waypoints.size() - 1)
+    {
       radio_msg.data = radio_msg.data + ";";
     }
   }
   radio_pub.publish(radio_msg);
 
   basestation_msgs::Radio robot_radio_msg;
-  robot_radio_msg.message_type =
-      basestation_msgs::Radio::MESSAGE_TYPE_DEFINE_WAYPOINT;
+  robot_radio_msg.message_type = basestation_msgs::Radio::MESSAGE_TYPE_DEFINE_WAYPOINT;
   tf::Vector3 vec;
-  switch (current_robot_id) {
-  case 1: {
+  switch (current_robot_id)
+  {
+    case 1:
+    {
+      for (int i = 0; i < waypoints.size(); i++)
+      {
+        vec.setX(waypoints[i]->getPosition().x);
+        vec.setY(waypoints[i]->getPosition().y);
+        vec.setZ(waypoints[i]->getPosition().z);
+        vec = ugv1_transform.inverse() * vec;
+        std::stringstream x_stream, y_stream, z_stream;
+        x_stream << std::fixed << std::setprecision(2) << vec.x();
+        y_stream << std::fixed << std::setprecision(2) << vec.y();
+        z_stream << std::fixed << std::setprecision(2) << vec.z();
 
-    for (int i = 0; i < waypoints.size(); i++) {
+        std::string x_str = x_stream.str();
+        std::string y_str = y_stream.str();
+        std::string z_str = z_stream.str();
 
-      vec.setX(waypoints[i]->getPosition().x);
-      vec.setY(waypoints[i]->getPosition().y);
-      vec.setZ(waypoints[i]->getPosition().z);
-      vec = ugv1_transform.inverse() * vec;
-      std::stringstream x_stream, y_stream, z_stream;
-      x_stream << std::fixed << std::setprecision(2) << vec.x();
-      y_stream << std::fixed << std::setprecision(2) << vec.y();
-      z_stream << std::fixed << std::setprecision(2) << vec.z();
-
-      std::string x_str = x_stream.str();
-      std::string y_str = y_stream.str();
-      std::string z_str = z_stream.str();
-
-      robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
-      if (i != waypoints.size() - 1) {
-        robot_radio_msg.data = robot_radio_msg.data + ";";
+        robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
+        if (i != waypoints.size() - 1)
+        {
+          robot_radio_msg.data = robot_radio_msg.data + ";";
+        }
       }
+      ugv1_radio_pub.publish(robot_radio_msg);
+      break;
     }
-    ugv1_radio_pub.publish(robot_radio_msg);
-    break;
-  }
-  case 2: {
-    for (int i = 0; i < waypoints.size(); i++) {
+    case 2:
+    {
+      for (int i = 0; i < waypoints.size(); i++)
+      {
+        vec.setX(waypoints[i]->getPosition().x);
+        vec.setY(waypoints[i]->getPosition().y);
+        vec.setZ(waypoints[i]->getPosition().z);
+        vec = ugv2_transform.inverse() * vec;
+        std::stringstream x_stream, y_stream, z_stream;
+        x_stream << std::fixed << std::setprecision(2) << vec.x();
+        y_stream << std::fixed << std::setprecision(2) << vec.y();
+        z_stream << std::fixed << std::setprecision(2) << vec.z();
 
-      vec.setX(waypoints[i]->getPosition().x);
-      vec.setY(waypoints[i]->getPosition().y);
-      vec.setZ(waypoints[i]->getPosition().z);
-      vec = ugv2_transform.inverse() * vec;
-      std::stringstream x_stream, y_stream, z_stream;
-      x_stream << std::fixed << std::setprecision(2) << vec.x();
-      y_stream << std::fixed << std::setprecision(2) << vec.y();
-      z_stream << std::fixed << std::setprecision(2) << vec.z();
+        std::string x_str = x_stream.str();
+        std::string y_str = y_stream.str();
+        std::string z_str = z_stream.str();
 
-      std::string x_str = x_stream.str();
-      std::string y_str = y_stream.str();
-      std::string z_str = z_stream.str();
-
-      robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
-      if (i != waypoints.size() - 1) {
-        robot_radio_msg.data = robot_radio_msg.data + ";";
+        robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
+        if (i != waypoints.size() - 1)
+        {
+          robot_radio_msg.data = robot_radio_msg.data + ";";
+        }
       }
+      ugv2_radio_pub.publish(robot_radio_msg);
+      break;
     }
-    ugv2_radio_pub.publish(robot_radio_msg);
-    break;
-  }
-  case 3: {
-    for (int i = 0; i < waypoints.size(); i++) {
+    case 3:
+    {
+      for (int i = 0; i < waypoints.size(); i++)
+      {
+        vec.setX(waypoints[i]->getPosition().x);
+        vec.setY(waypoints[i]->getPosition().y);
+        vec.setZ(waypoints[i]->getPosition().z);
+        vec = ugv3_transform.inverse() * vec;
+        std::stringstream x_stream, y_stream, z_stream;
+        x_stream << std::fixed << std::setprecision(2) << vec.x();
+        y_stream << std::fixed << std::setprecision(2) << vec.y();
+        z_stream << std::fixed << std::setprecision(2) << vec.z();
 
-      vec.setX(waypoints[i]->getPosition().x);
-      vec.setY(waypoints[i]->getPosition().y);
-      vec.setZ(waypoints[i]->getPosition().z);
-      vec = ugv3_transform.inverse() * vec;
-      std::stringstream x_stream, y_stream, z_stream;
-      x_stream << std::fixed << std::setprecision(2) << vec.x();
-      y_stream << std::fixed << std::setprecision(2) << vec.y();
-      z_stream << std::fixed << std::setprecision(2) << vec.z();
+        std::string x_str = x_stream.str();
+        std::string y_str = y_stream.str();
+        std::string z_str = z_stream.str();
 
-      std::string x_str = x_stream.str();
-      std::string y_str = y_stream.str();
-      std::string z_str = z_stream.str();
-
-      robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
-      if (i != waypoints.size() - 1) {
-        robot_radio_msg.data = robot_radio_msg.data + ";";
+        robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
+        if (i != waypoints.size() - 1)
+        {
+          robot_radio_msg.data = robot_radio_msg.data + ";";
+        }
       }
+      ugv3_radio_pub.publish(robot_radio_msg);
+      break;
     }
-    ugv3_radio_pub.publish(robot_radio_msg);
-    break;
-  }
-  case 4: {
-    for (int i = 0; i < waypoints.size(); i++) {
+    case 4:
+    {
+      for (int i = 0; i < waypoints.size(); i++)
+      {
+        vec.setX(waypoints[i]->getPosition().x);
+        vec.setY(waypoints[i]->getPosition().y);
+        vec.setZ(waypoints[i]->getPosition().z);
+        vec = uav1_transform.inverse() * vec;
+        std::stringstream x_stream, y_stream, z_stream;
+        x_stream << std::fixed << std::setprecision(2) << vec.x();
+        y_stream << std::fixed << std::setprecision(2) << vec.y();
+        z_stream << std::fixed << std::setprecision(2) << vec.z();
 
-      vec.setX(waypoints[i]->getPosition().x);
-      vec.setY(waypoints[i]->getPosition().y);
-      vec.setZ(waypoints[i]->getPosition().z);
-      vec = uav1_transform.inverse() * vec;
-      std::stringstream x_stream, y_stream, z_stream;
-      x_stream << std::fixed << std::setprecision(2) << vec.x();
-      y_stream << std::fixed << std::setprecision(2) << vec.y();
-      z_stream << std::fixed << std::setprecision(2) << vec.z();
+        std::string x_str = x_stream.str();
+        std::string y_str = y_stream.str();
+        std::string z_str = z_stream.str();
 
-      std::string x_str = x_stream.str();
-      std::string y_str = y_stream.str();
-      std::string z_str = z_stream.str();
-
-      robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
-      if (i != waypoints.size() - 1) {
-        robot_radio_msg.data = robot_radio_msg.data + ";";
+        robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
+        if (i != waypoints.size() - 1)
+        {
+          robot_radio_msg.data = robot_radio_msg.data + ";";
+        }
       }
+      uav1_radio_pub.publish(robot_radio_msg);
+      break;
     }
-    uav1_radio_pub.publish(robot_radio_msg);
-    break;
-  }
-  case 5: {
-    for (int i = 0; i < waypoints.size(); i++) {
+    case 5:
+    {
+      for (int i = 0; i < waypoints.size(); i++)
+      {
+        vec.setX(waypoints[i]->getPosition().x);
+        vec.setY(waypoints[i]->getPosition().y);
+        vec.setZ(waypoints[i]->getPosition().z);
+        vec = uav2_transform.inverse() * vec;
+        std::stringstream x_stream, y_stream, z_stream;
+        x_stream << std::fixed << std::setprecision(2) << vec.x();
+        y_stream << std::fixed << std::setprecision(2) << vec.y();
+        z_stream << std::fixed << std::setprecision(2) << vec.z();
 
-      vec.setX(waypoints[i]->getPosition().x);
-      vec.setY(waypoints[i]->getPosition().y);
-      vec.setZ(waypoints[i]->getPosition().z);
-      vec = uav2_transform.inverse() * vec;
-      std::stringstream x_stream, y_stream, z_stream;
-      x_stream << std::fixed << std::setprecision(2) << vec.x();
-      y_stream << std::fixed << std::setprecision(2) << vec.y();
-      z_stream << std::fixed << std::setprecision(2) << vec.z();
+        std::string x_str = x_stream.str();
+        std::string y_str = y_stream.str();
+        std::string z_str = z_stream.str();
 
-      std::string x_str = x_stream.str();
-      std::string y_str = y_stream.str();
-      std::string z_str = z_stream.str();
-
-      robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
-      if (i != waypoints.size() - 1) {
-        robot_radio_msg.data = robot_radio_msg.data + ";";
+        robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
+        if (i != waypoints.size() - 1)
+        {
+          robot_radio_msg.data = robot_radio_msg.data + ";";
+        }
       }
+      uav2_radio_pub.publish(robot_radio_msg);
+      break;
     }
-    uav2_radio_pub.publish(robot_radio_msg);
-    break;
-  }
-  case 6: {
-    for (int i = 0; i < waypoints.size(); i++) {
+    case 6:
+    {
+      for (int i = 0; i < waypoints.size(); i++)
+      {
+        vec.setX(waypoints[i]->getPosition().x);
+        vec.setY(waypoints[i]->getPosition().y);
+        vec.setZ(waypoints[i]->getPosition().z);
+        vec = uav3_transform.inverse() * vec;
+        std::stringstream x_stream, y_stream, z_stream;
+        x_stream << std::fixed << std::setprecision(2) << vec.x();
+        y_stream << std::fixed << std::setprecision(2) << vec.y();
+        z_stream << std::fixed << std::setprecision(2) << vec.z();
 
-      vec.setX(waypoints[i]->getPosition().x);
-      vec.setY(waypoints[i]->getPosition().y);
-      vec.setZ(waypoints[i]->getPosition().z);
-      vec = uav3_transform.inverse() * vec;
-      std::stringstream x_stream, y_stream, z_stream;
-      x_stream << std::fixed << std::setprecision(2) << vec.x();
-      y_stream << std::fixed << std::setprecision(2) << vec.y();
-      z_stream << std::fixed << std::setprecision(2) << vec.z();
+        std::string x_str = x_stream.str();
+        std::string y_str = y_stream.str();
+        std::string z_str = z_stream.str();
 
-      std::string x_str = x_stream.str();
-      std::string y_str = y_stream.str();
-      std::string z_str = z_stream.str();
-
-      robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
-      if (i != waypoints.size() - 1) {
-        robot_radio_msg.data = robot_radio_msg.data + ";";
+        robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
+        if (i != waypoints.size() - 1)
+        {
+          robot_radio_msg.data = robot_radio_msg.data + ";";
+        }
       }
+      uav3_radio_pub.publish(robot_radio_msg);
+      break;
     }
-    uav3_radio_pub.publish(robot_radio_msg);
-    break;
-  }
-  case 7: {
-    for (int i = 0; i < waypoints.size(); i++) {
+    case 7:
+    {
+      for (int i = 0; i < waypoints.size(); i++)
+      {
+        vec.setX(waypoints[i]->getPosition().x);
+        vec.setY(waypoints[i]->getPosition().y);
+        vec.setZ(waypoints[i]->getPosition().z);
+        vec = uav4_transform.inverse() * vec;
+        std::stringstream x_stream, y_stream, z_stream;
+        x_stream << std::fixed << std::setprecision(2) << vec.x();
+        y_stream << std::fixed << std::setprecision(2) << vec.y();
+        z_stream << std::fixed << std::setprecision(2) << vec.z();
 
-      vec.setX(waypoints[i]->getPosition().x);
-      vec.setY(waypoints[i]->getPosition().y);
-      vec.setZ(waypoints[i]->getPosition().z);
-      vec = uav4_transform.inverse() * vec;
-      std::stringstream x_stream, y_stream, z_stream;
-      x_stream << std::fixed << std::setprecision(2) << vec.x();
-      y_stream << std::fixed << std::setprecision(2) << vec.y();
-      z_stream << std::fixed << std::setprecision(2) << vec.z();
+        std::string x_str = x_stream.str();
+        std::string y_str = y_stream.str();
+        std::string z_str = z_stream.str();
 
-      std::string x_str = x_stream.str();
-      std::string y_str = y_stream.str();
-      std::string z_str = z_stream.str();
-
-      robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
-      if (i != waypoints.size() - 1) {
-        robot_radio_msg.data = robot_radio_msg.data + ";";
+        robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
+        if (i != waypoints.size() - 1)
+        {
+          robot_radio_msg.data = robot_radio_msg.data + ";";
+        }
       }
+      uav4_radio_pub.publish(robot_radio_msg);
+      break;
     }
-    uav4_radio_pub.publish(robot_radio_msg);
-    break;
-  }
-  case 8: {
-    for (int i = 0; i < waypoints.size(); i++) {
+    case 8:
+    {
+      for (int i = 0; i < waypoints.size(); i++)
+      {
+        vec.setX(waypoints[i]->getPosition().x);
+        vec.setY(waypoints[i]->getPosition().y);
+        vec.setZ(waypoints[i]->getPosition().z);
+        vec = sp1_transform.inverse() * vec;
+        std::stringstream x_stream, y_stream, z_stream;
+        x_stream << std::fixed << std::setprecision(2) << vec.x();
+        y_stream << std::fixed << std::setprecision(2) << vec.y();
+        z_stream << std::fixed << std::setprecision(2) << vec.z();
 
-      vec.setX(waypoints[i]->getPosition().x);
-      vec.setY(waypoints[i]->getPosition().y);
-      vec.setZ(waypoints[i]->getPosition().z);
-      vec = sp1_transform.inverse() * vec;
-      std::stringstream x_stream, y_stream, z_stream;
-      x_stream << std::fixed << std::setprecision(2) << vec.x();
-      y_stream << std::fixed << std::setprecision(2) << vec.y();
-      z_stream << std::fixed << std::setprecision(2) << vec.z();
+        std::string x_str = x_stream.str();
+        std::string y_str = y_stream.str();
+        std::string z_str = z_stream.str();
 
-      std::string x_str = x_stream.str();
-      std::string y_str = y_stream.str();
-      std::string z_str = z_stream.str();
-
-      robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
-      if (i != waypoints.size() - 1) {
-        robot_radio_msg.data = robot_radio_msg.data + ";";
+        robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
+        if (i != waypoints.size() - 1)
+        {
+          robot_radio_msg.data = robot_radio_msg.data + ";";
+        }
       }
+      sp1_radio_pub.publish(robot_radio_msg);
+      break;
     }
-    sp1_radio_pub.publish(robot_radio_msg);
-    break;
-  }
-  case 9: {
-    for (int i = 0; i < waypoints.size(); i++) {
+    case 9:
+    {
+      for (int i = 0; i < waypoints.size(); i++)
+      {
+        vec.setX(waypoints[i]->getPosition().x);
+        vec.setY(waypoints[i]->getPosition().y);
+        vec.setZ(waypoints[i]->getPosition().z);
+        vec = sp2_transform.inverse() * vec;
+        std::stringstream x_stream, y_stream, z_stream;
+        x_stream << std::fixed << std::setprecision(2) << vec.x();
+        y_stream << std::fixed << std::setprecision(2) << vec.y();
+        z_stream << std::fixed << std::setprecision(2) << vec.z();
 
-      vec.setX(waypoints[i]->getPosition().x);
-      vec.setY(waypoints[i]->getPosition().y);
-      vec.setZ(waypoints[i]->getPosition().z);
-      vec = sp2_transform.inverse() * vec;
-      std::stringstream x_stream, y_stream, z_stream;
-      x_stream << std::fixed << std::setprecision(2) << vec.x();
-      y_stream << std::fixed << std::setprecision(2) << vec.y();
-      z_stream << std::fixed << std::setprecision(2) << vec.z();
+        std::string x_str = x_stream.str();
+        std::string y_str = y_stream.str();
+        std::string z_str = z_stream.str();
 
-      std::string x_str = x_stream.str();
-      std::string y_str = y_stream.str();
-      std::string z_str = z_stream.str();
-
-      robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
-      if (i != waypoints.size() - 1) {
-        robot_radio_msg.data = robot_radio_msg.data + ";";
+        robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
+        if (i != waypoints.size() - 1)
+        {
+          robot_radio_msg.data = robot_radio_msg.data + ";";
+        }
       }
+      sp2_radio_pub.publish(robot_radio_msg);
+      break;
     }
-    sp2_radio_pub.publish(robot_radio_msg);
-    break;
-  }
-  case 10: {
-    for (int i = 0; i < waypoints.size(); i++) {
+    case 10:
+    {
+      for (int i = 0; i < waypoints.size(); i++)
+      {
+        vec.setX(waypoints[i]->getPosition().x);
+        vec.setY(waypoints[i]->getPosition().y);
+        vec.setZ(waypoints[i]->getPosition().z);
+        vec = canary1_transform.inverse() * vec;
+        std::stringstream x_stream, y_stream, z_stream;
+        x_stream << std::fixed << std::setprecision(2) << vec.x();
+        y_stream << std::fixed << std::setprecision(2) << vec.y();
+        z_stream << std::fixed << std::setprecision(2) << vec.z();
 
-      vec.setX(waypoints[i]->getPosition().x);
-      vec.setY(waypoints[i]->getPosition().y);
-      vec.setZ(waypoints[i]->getPosition().z);
-      vec = canary1_transform.inverse() * vec;
-      std::stringstream x_stream, y_stream, z_stream;
-      x_stream << std::fixed << std::setprecision(2) << vec.x();
-      y_stream << std::fixed << std::setprecision(2) << vec.y();
-      z_stream << std::fixed << std::setprecision(2) << vec.z();
+        std::string x_str = x_stream.str();
+        std::string y_str = y_stream.str();
+        std::string z_str = z_stream.str();
 
-      std::string x_str = x_stream.str();
-      std::string y_str = y_stream.str();
-      std::string z_str = z_stream.str();
-
-      robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
-      if (i != waypoints.size() - 1) {
-        robot_radio_msg.data = robot_radio_msg.data + ";";
+        robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
+        if (i != waypoints.size() - 1)
+        {
+          robot_radio_msg.data = robot_radio_msg.data + ";";
+        }
       }
+      canary1_radio_pub.publish(robot_radio_msg);
+      break;
     }
-    canary1_radio_pub.publish(robot_radio_msg);
-    break;
-  }
-  case 11: {
-    for (int i = 0; i < waypoints.size(); i++) {
+    case 11:
+    {
+      for (int i = 0; i < waypoints.size(); i++)
+      {
+        vec.setX(waypoints[i]->getPosition().x);
+        vec.setY(waypoints[i]->getPosition().y);
+        vec.setZ(waypoints[i]->getPosition().z);
+        vec = canary2_transform.inverse() * vec;
+        std::stringstream x_stream, y_stream, z_stream;
+        x_stream << std::fixed << std::setprecision(2) << vec.x();
+        y_stream << std::fixed << std::setprecision(2) << vec.y();
+        z_stream << std::fixed << std::setprecision(2) << vec.z();
 
-      vec.setX(waypoints[i]->getPosition().x);
-      vec.setY(waypoints[i]->getPosition().y);
-      vec.setZ(waypoints[i]->getPosition().z);
-      vec = canary2_transform.inverse() * vec;
-      std::stringstream x_stream, y_stream, z_stream;
-      x_stream << std::fixed << std::setprecision(2) << vec.x();
-      y_stream << std::fixed << std::setprecision(2) << vec.y();
-      z_stream << std::fixed << std::setprecision(2) << vec.z();
+        std::string x_str = x_stream.str();
+        std::string y_str = y_stream.str();
+        std::string z_str = z_stream.str();
 
-      std::string x_str = x_stream.str();
-      std::string y_str = y_stream.str();
-      std::string z_str = z_stream.str();
-
-      robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
-      if (i != waypoints.size() - 1) {
-        robot_radio_msg.data = robot_radio_msg.data + ";";
+        robot_radio_msg.data += x_str + "," + y_str + "," + z_str;
+        if (i != waypoints.size() - 1)
+        {
+          robot_radio_msg.data = robot_radio_msg.data + ";";
+        }
       }
+      canary2_radio_pub.publish(robot_radio_msg);
+      break;
     }
-    canary2_radio_pub.publish(robot_radio_msg);
-    break;
-  }
-  default: { ROS_ERROR("Not robot id specified"); }
+    default:
+    {
+      ROS_ERROR("Not robot id specified");
+    }
   }
 }
 
-void MultiWaypointTool::RobotSelectCallback(
-    const std_msgs::Int32::ConstPtr &robot_select) {
+void MultiWaypointTool::RobotSelectCallback(const std_msgs::Int32::ConstPtr& robot_select)
+{
   current_robot_id = robot_select->data;
 }
 
-void MultiWaypointTool::UGV1TransformCallback(
-    const nav_msgs::OdometryPtr &msg) {
-  ugv1_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x,
-                                       msg->pose.pose.position.y,
-                                       msg->pose.pose.position.z));
-  ugv1_transform.setRotation(tf::Quaternion(
-      msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
-      msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
+void MultiWaypointTool::UGV1TransformCallback(const nav_msgs::OdometryPtr& msg)
+{
+  ugv1_transform.setOrigin(
+      tf::Vector3(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z));
+  ugv1_transform.setRotation(tf::Quaternion(msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
+                                            msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
 }
 
-void MultiWaypointTool::UGV2TransformCallback(
-    const nav_msgs::OdometryPtr &msg) {
-  ugv2_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x,
-                                       msg->pose.pose.position.y,
-                                       msg->pose.pose.position.z));
-  ugv2_transform.setRotation(tf::Quaternion(
-      msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
-      msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
+void MultiWaypointTool::UGV2TransformCallback(const nav_msgs::OdometryPtr& msg)
+{
+  ugv2_transform.setOrigin(
+      tf::Vector3(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z));
+  ugv2_transform.setRotation(tf::Quaternion(msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
+                                            msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
 }
 
-void MultiWaypointTool::UGV3TransformCallback(
-    const nav_msgs::OdometryPtr &msg) {
-  ugv3_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x,
-                                       msg->pose.pose.position.y,
-                                       msg->pose.pose.position.z));
-  ugv3_transform.setRotation(tf::Quaternion(
-      msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
-      msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
+void MultiWaypointTool::UGV3TransformCallback(const nav_msgs::OdometryPtr& msg)
+{
+  ugv3_transform.setOrigin(
+      tf::Vector3(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z));
+  ugv3_transform.setRotation(tf::Quaternion(msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
+                                            msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
 }
 
-void MultiWaypointTool::SP1TransformCallback(const nav_msgs::OdometryPtr &msg) {
-  sp1_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x,
-                                      msg->pose.pose.position.y,
-                                      msg->pose.pose.position.z));
-  sp1_transform.setRotation(tf::Quaternion(
-      msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
-      msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
+void MultiWaypointTool::SP1TransformCallback(const nav_msgs::OdometryPtr& msg)
+{
+  sp1_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z));
+  sp1_transform.setRotation(tf::Quaternion(msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
+                                           msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
 }
 
-void MultiWaypointTool::SP2TransformCallback(const nav_msgs::OdometryPtr &msg) {
-  sp2_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x,
-                                      msg->pose.pose.position.y,
-                                      msg->pose.pose.position.z));
-  sp2_transform.setRotation(tf::Quaternion(
-      msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
-      msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
+void MultiWaypointTool::SP2TransformCallback(const nav_msgs::OdometryPtr& msg)
+{
+  sp2_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z));
+  sp2_transform.setRotation(tf::Quaternion(msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
+                                           msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
 }
 
-void MultiWaypointTool::UAV1TransformCallback(
-    const nav_msgs::OdometryPtr &msg) {
-  uav1_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x,
-                                       msg->pose.pose.position.y,
-                                       msg->pose.pose.position.z));
-  uav1_transform.setRotation(tf::Quaternion(
-      msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
-      msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
+void MultiWaypointTool::UAV1TransformCallback(const nav_msgs::OdometryPtr& msg)
+{
+  uav1_transform.setOrigin(
+      tf::Vector3(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z));
+  uav1_transform.setRotation(tf::Quaternion(msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
+                                            msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
 }
 
-void MultiWaypointTool::UAV2TransformCallback(
-    const nav_msgs::OdometryPtr &msg) {
-  uav2_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x,
-                                       msg->pose.pose.position.y,
-                                       msg->pose.pose.position.z));
-  uav2_transform.setRotation(tf::Quaternion(
-      msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
-      msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
+void MultiWaypointTool::UAV2TransformCallback(const nav_msgs::OdometryPtr& msg)
+{
+  uav2_transform.setOrigin(
+      tf::Vector3(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z));
+  uav2_transform.setRotation(tf::Quaternion(msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
+                                            msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
 }
 
-void MultiWaypointTool::UAV3TransformCallback(
-    const nav_msgs::OdometryPtr &msg) {
-  uav3_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x,
-                                       msg->pose.pose.position.y,
-                                       msg->pose.pose.position.z));
-  uav3_transform.setRotation(tf::Quaternion(
-      msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
-      msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
+void MultiWaypointTool::UAV3TransformCallback(const nav_msgs::OdometryPtr& msg)
+{
+  uav3_transform.setOrigin(
+      tf::Vector3(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z));
+  uav3_transform.setRotation(tf::Quaternion(msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
+                                            msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
 }
 
-void MultiWaypointTool::UAV4TransformCallback(
-    const nav_msgs::OdometryPtr &msg) {
-  uav4_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x,
-                                       msg->pose.pose.position.y,
-                                       msg->pose.pose.position.z));
-  uav4_transform.setRotation(tf::Quaternion(
-      msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
-      msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
+void MultiWaypointTool::UAV4TransformCallback(const nav_msgs::OdometryPtr& msg)
+{
+  uav4_transform.setOrigin(
+      tf::Vector3(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z));
+  uav4_transform.setRotation(tf::Quaternion(msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
+                                            msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
 }
 
-void MultiWaypointTool::CANARY1TransformCallback(
-    const nav_msgs::OdometryPtr &msg) {
-  canary1_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x,
-                                          msg->pose.pose.position.y,
-                                          msg->pose.pose.position.z));
-  canary1_transform.setRotation(tf::Quaternion(
-      msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
-      msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
+void MultiWaypointTool::CANARY1TransformCallback(const nav_msgs::OdometryPtr& msg)
+{
+  canary1_transform.setOrigin(
+      tf::Vector3(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z));
+  canary1_transform.setRotation(tf::Quaternion(msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
+                                               msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
 }
 
-void MultiWaypointTool::CANARY2TransformCallback(
-    const nav_msgs::OdometryPtr &msg) {
-  canary2_transform.setOrigin(tf::Vector3(msg->pose.pose.position.x,
-                                          msg->pose.pose.position.y,
-                                          msg->pose.pose.position.z));
-  canary2_transform.setRotation(tf::Quaternion(
-      msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
-      msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
+void MultiWaypointTool::CANARY2TransformCallback(const nav_msgs::OdometryPtr& msg)
+{
+  canary2_transform.setOrigin(
+      tf::Vector3(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z));
+  canary2_transform.setRotation(tf::Quaternion(msg->pose.pose.orientation.x, msg->pose.pose.orientation.y,
+                                               msg->pose.pose.orientation.z, msg->pose.pose.orientation.w));
 }
 
-void MultiWaypointTool::clearWaypoints() {
+void MultiWaypointTool::clearWaypoints()
+{
   deleteActive();
   for (int i = 0; i < waypoints.size(); i++)
     delete waypoints[i];
@@ -910,17 +958,20 @@ void MultiWaypointTool::clearWaypoints() {
   lines.clear();
 }
 
-int MultiWaypointTool::processKeyEvent(QKeyEvent *event,
-                                       rviz::RenderPanel *panel) {
+int MultiWaypointTool::processKeyEvent(QKeyEvent* event, rviz::RenderPanel* panel)
+{
   space_pressed = event->key() == Qt::Key_Space;
-  if (active_waypoint != NULL && event->key() == Qt::Key_R) {
+  if (active_waypoint != NULL && event->key() == Qt::Key_R)
+  {
     set_orientation_mode = !set_orientation_mode;
-    if (set_orientation_mode && active_waypoint->getUseOrientation()) {
+    if (set_orientation_mode && active_waypoint->getUseOrientation())
+    {
       set_orientation_mode = false;
       active_waypoint->useOrientation(false);
     }
   }
-  if (event->key() == Qt::Key_E) {
+  if (event->key() == Qt::Key_E)
+  {
     grid_enabled = !grid_enabled;
     if (active_waypoint != NULL)
       grid->setVisible(grid_enabled);
@@ -930,15 +981,17 @@ int MultiWaypointTool::processKeyEvent(QKeyEvent *event,
   return 0;
 }
 
-void MultiWaypointTool::save(rviz::Config config) const {
+void MultiWaypointTool::save(rviz::Config config) const
+{
   config.mapSetValue("Class", getClassId());
 }
 
-void MultiWaypointTool::load(const rviz::Config &config) {}
+void MultiWaypointTool::load(const rviz::Config& config)
+{
+}
 
-} // end namespace rviz_multi_waypoint_plugin
+}  // end namespace rviz_multi_waypoint_plugin
 
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(rviz_multi_waypoint_plugin::MultiWaypointTool,
-                       rviz::Tool)
+PLUGINLIB_EXPORT_CLASS(rviz_multi_waypoint_plugin::MultiWaypointTool, rviz::Tool)
 // END_TUTORIAL
