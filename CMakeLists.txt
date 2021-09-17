@@ -5,8 +5,8 @@
 ## First start with some standard catkin stuff.
 cmake_minimum_required(VERSION 3.0.2)
 project(rviz_multi_waypoint_plugin)
-find_package(catkin REQUIRED COMPONENTS rviz nav_msgs geometry_msgs basestation_msgs)
-catkin_package(CATKIN_DEPENDS basestation_msgs)
+find_package(catkin REQUIRED COMPONENTS rviz nav_msgs geometry_msgs)
+catkin_package(CATKIN_DEPENDS)
 include_directories(${catkin_INCLUDE_DIRS})
 link_directories(${catkin_LIBRARY_DIRS})
 
@@ -64,26 +64,26 @@ target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES} ${catkin_LIBRARIES})
 
 ## Install rules
 
-install(TARGETS
-  ${PROJECT_NAME}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+# install(TARGETS
+#   ${PROJECT_NAME}
+#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
 
-install(FILES
-  plugin_description.xml
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+# install(FILES
+#   plugin_description.xml
+#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-install(DIRECTORY media/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/media)
+# install(DIRECTORY media/
+#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/media)
 
-install(DIRECTORY ogre_media
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
+# install(DIRECTORY ogre_media
+#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+# )
 
-install(DIRECTORY icons/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/icons)
+# install(DIRECTORY icons/
+#   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/icons)
 
-catkin_install_python(PROGRAMS
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+# catkin_install_python(PROGRAMS
+#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
