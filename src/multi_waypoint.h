@@ -12,6 +12,7 @@
 #include <rviz/ogre_helpers/shape.h>
 #include <rviz/tool.h>
 #include <std_msgs/Int32.h>
+#include <std_msgs/Bool.h>
 #include <tf/transform_broadcaster.h>
 
 namespace Ogre
@@ -101,6 +102,8 @@ public:
   MultiWaypointTool();
   ~MultiWaypointTool();
 
+  void publishCallback(const std_msgs::Bool::ConstPtr& msg);
+
   virtual void onInitialize();
 
   virtual void activate();
@@ -127,6 +130,9 @@ private:
   int current_robot_id;
 
   ros::Publisher path_pub;
+  ros::Publisher status_pub;
+
+  ros::Subscriber publish_sub;
 
   void deleteActive();
   void publishWaypoints();

@@ -226,7 +226,8 @@ void MultiWaypointTool::onInitialize()
 {
   ros::NodeHandle nh;
   path_pub = nh.advertise<nav_msgs::Path>("rviz/waypoints", 1);
-
+  status_pub = nh.advertise<std_msgs::Bool>("rviz/waypoint_plugin_active",1);
+  publish_sub = nh.subscribe("rviz/waypoint_plugin_publish", 1, &MultiWaypointTool::publishCallback, this);
   scene_node = scene_manager_->getRootSceneNode()->createChildSceneNode();
 
   grid = new Grid(scene_manager_, scene_node);
@@ -235,13 +236,28 @@ void MultiWaypointTool::onInitialize()
 }
 
 
+void MultiWaypointTool::publishCallback(const std_msgs::Bool::ConstPtr& msg){
+  if(msg->data){
+    publishWaypoints();
+    clearWaypoints();
+  }
+  else{
+    clearWaypoints();
+  }
+}
 
 void MultiWaypointTool::activate()
 {
+  std_msgs::Bool active_msg;
+  active_msg.data = true;
+  status_pub.publish(active_msg);
 }
 
 void MultiWaypointTool::deactivate()
 {
+  std_msgs::Bool active_msg;
+  active_msg.data = false;
+  status_pub.publish(active_msg);
   deleteActive();
 }
 
