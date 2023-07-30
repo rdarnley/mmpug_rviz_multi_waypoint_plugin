@@ -103,7 +103,8 @@ public:
   ~MultiWaypointTool();
 
   void publishCallback(const std_msgs::Bool::ConstPtr& msg);
-
+  void handleStreetViewWp(const std_msgs::Bool::ConstPtr& msg);
+  
   virtual void onInitialize();
 
   virtual void activate();
@@ -128,11 +129,14 @@ private:
   Grid* grid;
   bool grid_enabled;
   int current_robot_id;
+  bool waypoint_for_street_view;
 
   ros::Publisher path_pub;
   ros::Publisher status_pub;
+  ros::Publisher street_view_pub;
 
   ros::Subscriber publish_sub;
+  ros::Subscriber street_view_sub;
 
   void deleteActive();
   void publishWaypoints();

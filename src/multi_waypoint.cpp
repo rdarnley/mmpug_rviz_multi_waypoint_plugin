@@ -226,8 +226,13 @@ void MultiWaypointTool::onInitialize()
 {
   ros::NodeHandle nh;
   path_pub = nh.advertise<nav_msgs::Path>("rviz/waypoints", 1);
+  street_view_pub = nh.advertise<nav_msgs::Path>("rviz/street_view_waypoint", 1);
+
   status_pub = nh.advertise<std_msgs::Bool>("rviz/waypoint_plugin_active",1);
   publish_sub = nh.subscribe("rviz/waypoint_plugin_publish", 1, &MultiWaypointTool::publishCallback, this);
+  street_view_sub = nh.subscribe("rviz/req_street_view_wp",1, &MultiWaypointTool::handleStreetViewWp, this);
+  
+  waypoint_for_street_view = false;
   scene_node = scene_manager_->getRootSceneNode()->createChildSceneNode();
 
   grid = new Grid(scene_manager_, scene_node);
@@ -243,6 +248,15 @@ void MultiWaypointTool::publishCallback(const std_msgs::Bool::ConstPtr& msg){
   }
   else{
     clearWaypoints();
+  }
+}
+
+void MultiWaypointTool::handleStreetViewWp(const std_msgs::Bool::ConstPtr& msg){
+  if(msg->data){
+    waypoint_for_street_view = true;
+  }
+  else{
+    waypoint_for_street_view = false;
   }
 }
 
@@ -422,15 +436,30 @@ void MultiWaypointTool::publishWaypoints()
   path.header.stamp = ros::Time::now();
   path.header.frame_id = context_->getFixedFrame().toStdString();
 
-  for (int i = 0; i < waypoints.size(); i++)
-  {
-    geometry_msgs::PoseStamped pose;
-    pose.header = path.header;
-    pose.pose = waypoints[i]->getPose();
-    path.poses.push_back(pose);
-  }
+  if(waypoint_for_street_view){
+    
+    if(waypoints.size() > 0){
 
-  path_pub.publish(path);
+      geometry_msgs::PoseStamped pose;
+      pose.header = path.header;
+      pose.pose = waypoints[0]->getPose();
+      path.poses.push_back(pose);
+      waypoint_for_street_view = false;
+      street_view_pub.publish(path);
+
+    }
+  }
+  else{
+    for (int i = 0; i < waypoints.size(); i++)
+    {
+      geometry_msgs::PoseStamped pose;
+      pose.header = path.header;
+      pose.pose = waypoints[i]->getPose();
+      path.poses.push_back(pose);
+    }
+    path_pub.publish(path);
+  }
+  
 }
 
 void MultiWaypointTool::clearWaypoints()
